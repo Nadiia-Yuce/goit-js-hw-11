@@ -54,7 +54,7 @@ function handlerSubmit(event) {
             'Sorry, there are no images matching your search query. Please try again!',
           messageColor: 'white',
           messageSize: '16px',
-          position: 'topRight',
+          position: 'bottomRight',
           backgroundColor: '#ef4040',
           iconUrl: errorSvg,
           close: false,
