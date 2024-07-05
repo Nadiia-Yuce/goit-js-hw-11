@@ -1,0 +1,58 @@
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
+import { getPicturesByQuery } from './js/pixabay-api';
+import { renderGalleryCard } from './js/render-functions';
+import errorSvg from './img/error.svg';
+import cautionSvg from './img/caution.svg';
+
+const form = document.querySelector('.form');
+const gallery = document.querySelector('.gallery');
+
+form.addEventListener('submit', handlerSubmit);
+
+function handlerSubmit(event) {
+  event.preventDefault();
+  gallery.innerHTML = ''; //очищаємо вміст галереї перед новим пошуком
+  const query = form.elements.input.value.toLowerCase().trim();
+
+  if (query === '') {
+    iziToast.warning({
+      title: 'Caution',
+      titleColor: 'white',
+      titleSize: '16px',
+      message: 'Please, fill out the field!',
+      messageColor: 'white',
+      messageSize: '16px',
+      position: 'topRight',
+      backgroundColor: '#ffa000',
+      iconUrl: cautionSvg,
+      close: false,
+      closeOnClick: true,
+    });
+    return;
+  }
+
+  getPicturesByQuery(query)
+    .then(data => {
+      if (data.hits.length === 0) {
+        iziToast.error({
+          title: 'Error',
+          titleColor: 'white',
+          titleSize: '16px',
+          message:
+            'Sorry, there are no images matching your search query. Please try again!',
+          messageColor: 'white',
+          messageSize: '16px',
+          position: 'topRight',
+          backgroundColor: '#ef4040',
+          iconUrl: errorSvg,
+          close: false,
+          closeOnClick: true,
+        });
+      } else {
+        gallery.innerHTML = renderGalleryCard(data.hits);
+      }
+    })
+    .catch(error => console.log(error))
+    .finally(() => form.reset());
+}
