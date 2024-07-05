@@ -4,18 +4,27 @@ import { getPicturesByQuery } from './js/pixabay-api';
 import { renderGalleryCard } from './js/render-functions';
 import errorSvg from './img/error.svg';
 import cautionSvg from './img/caution.svg';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const form = document.querySelector('.form');
 const gallery = document.querySelector('.gallery');
+const preloader = document.querySelector('.loader-wrap');
+//Підключення бібліотеки для відображення галереї, що гортається
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt', //Підпис під зображенням
+  captionDelay: 250, //Час, після якого буде відображений підпис
+});
 
-form.addEventListener('submit', handlerSubmit);
+form.addEventListener('submit', handlerSubmit); //Прослуховувач подій
 
 function handlerSubmit(event) {
-  event.preventDefault();
+  event.preventDefault(); //Запобігаємо дефолтному перезавантаженню сторінки
   gallery.innerHTML = ''; //очищаємо вміст галереї перед новим пошуком
-  const query = form.elements.input.value.toLowerCase().trim();
+  const query = form.elements.input.value.toLowerCase().trim(); //Обробка запиту користувача
 
   if (query === '') {
+    //Якщо користувач залишив поле пустим
     iziToast.warning({
       title: 'Caution',
       titleColor: 'white',
@@ -32,8 +41,10 @@ function handlerSubmit(event) {
     return;
   }
 
-  getPicturesByQuery(query)
+  preloader.style.display = 'flex'; //Додавання прелоадера
+  getPicturesByQuery(query) //HTTP запит
     .then(data => {
+      //Якщо об'єкт бекенду data.hits пустий (користувач ввів щось невалідне) -> сповіщуємо про це
       if (data.hits.length === 0) {
         iziToast.error({
           title: 'Error',
@@ -50,9 +61,13 @@ function handlerSubmit(event) {
           closeOnClick: true,
         });
       } else {
-        gallery.innerHTML = renderGalleryCard(data.hits);
+        gallery.innerHTML = renderGalleryCard(data.hits); //Виклик функції для створення розмітки
+        lightbox.refresh(); //Метод бібліотеки SimpleLightbox, який видаляє і повторно ініціалізує лайтбокс
       }
     })
-    .catch(error => console.log(error))
-    .finally(() => form.reset());
+    .catch(error => console.log(error)) //Ловимо помилку в консоль
+    .finally(() => {
+      form.reset(); //Оновлення поля форми
+      preloader.style.display = 'none'; //Видалення прелоадера після завантаження картинок
+    });
 }

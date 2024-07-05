@@ -13,7 +13,6 @@ export function renderGalleryCard(images) {
       <li class="gallery-item">
       <a class="gallery-link" href="${largeImageURL}">
       <img class="gallery-img" src="${webformatURL}" alt="${tags}" />
-      </a>
       <ul class="card-info">
         <li class="card-info-item">
           Likes<span class="accent">${likes}</span>
@@ -28,6 +27,7 @@ export function renderGalleryCard(images) {
           Downloads<span class="accent">${downloads}</span>
         </li>
       </ul>
+      </a>
     </li>`
     )
     .join('');
