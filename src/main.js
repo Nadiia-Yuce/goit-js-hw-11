@@ -65,7 +65,21 @@ function handlerSubmit(event) {
         lightbox.refresh(); //Метод бібліотеки SimpleLightbox, який видаляє і повторно ініціалізує лайтбокс
       }
     })
-    .catch(error => console.log(error)) //Ловимо помилку в консоль
+    .catch(error => {
+      iziToast.error({
+        title: 'Error',
+        titleColor: 'white',
+        titleSize: '16px',
+        message: `Ups... Someting went wrong. Error: ${error}`,
+        messageColor: 'white',
+        messageSize: '16px',
+        position: 'bottomRight',
+        backgroundColor: '#ef4040',
+        iconUrl: errorSvg,
+        close: false,
+        closeOnClick: true,
+      });
+    }) //Інформуємо користувача у разі виникнення помилки
     .finally(() => {
       form.reset(); //Оновлення поля форми
       preloader.style.display = 'none'; //Видалення прелоадера після завантаження картинок
